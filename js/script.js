@@ -1,4 +1,14 @@
 // ============================================
+// CONFIGURATION
+// ============================================
+const CONFIG = {
+    bookingEmail: 'bookings@zanzibartours.com',
+    infoEmail: 'info@zanzibartours.com',
+    phone: '+255 123 456 789',
+    whatsappNumber: '255123456789'
+};
+
+// ============================================
 // NAVIGATION & MOBILE MENU
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
@@ -133,13 +143,14 @@ Please respond to this inquiry as soon as possible.
         `.trim();
 
         // Create mailto link
-        const mailtoLink = `mailto:bookings@zanzibartours.com?subject=Tour Booking Request - ${data.name}&body=${encodeURIComponent(emailBody)}`;
+        const mailtoLink = `mailto:${CONFIG.bookingEmail}?subject=Tour Booking Request - ${data.name}&body=${encodeURIComponent(emailBody)}`;
 
         // Open email client
         window.location.href = mailtoLink;
 
         // Show success message
-        showMessage('Your booking request has been prepared. Your email client will open shortly. If it doesn\'t open automatically, please contact us at bookings@zanzibartours.com', 'success');
+        const successMessage = `Your booking request has been prepared. Your email client will open shortly. If it doesn't open automatically, please contact us at ${CONFIG.bookingEmail}`;
+        showMessage(successMessage, 'success');
 
         // Reset form
         bookingForm.reset();
@@ -196,11 +207,29 @@ Please respond to this inquiry as soon as possible.
             const email = emailInput.value;
 
             if (email) {
-                // For static site, we'll show a simple alert
-                alert('Thank you for subscribing! We\'ll keep you updated with our latest offers and tours.');
+                // Create a temporary success message
+                const successMsg = document.createElement('div');
+                successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #27ae60; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999; animation: slideIn 0.3s ease;';
+                successMsg.textContent = 'Thank you for subscribing! We\'ll keep you updated with our latest offers and tours.';
+                document.body.appendChild(successMsg);
+                
+                // Remove message after 5 seconds
+                setTimeout(() => {
+                    successMsg.remove();
+                }, 5000);
+                
                 emailInput.value = '';
             } else {
-                alert('Please enter a valid email address.');
+                // Create a temporary error message
+                const errorMsg = document.createElement('div');
+                errorMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #e74c3c; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999;';
+                errorMsg.textContent = 'Please enter a valid email address.';
+                document.body.appendChild(errorMsg);
+                
+                // Remove message after 3 seconds
+                setTimeout(() => {
+                    errorMsg.remove();
+                }, 3000);
             }
         });
     }
@@ -336,10 +365,13 @@ if ('requestIdleCallback' in window) {
 // ============================================
 // ERROR HANDLING FOR IMAGES
 // ============================================
+// Placeholder image as data URI
+const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23ecf0f1"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="18" fill="%237f8c8d"%3EImage Not Available%3C/text%3E%3C/svg%3E';
+
 document.addEventListener('error', function(e) {
     if (e.target.tagName === 'IMG') {
         // Set a placeholder image if image fails to load
-        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23ecf0f1"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="18" fill="%237f8c8d"%3EImage Not Available%3C/text%3E%3C/svg%3E';
+        e.target.src = PLACEHOLDER_IMAGE;
         e.target.alt = 'Image not available';
     }
 }, true);
