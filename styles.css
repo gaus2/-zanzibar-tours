@@ -109,6 +109,14 @@ a {
     width: 100%;
 }
 
+.nav-menu a.active:not(.btn-primary) {
+    color: var(--primary-color);
+}
+
+.nav-menu a.active:not(.btn-primary)::after {
+    width: 100%;
+}
+
 .menu-toggle {
     display: none;
     flex-direction: column;
@@ -894,7 +902,7 @@ a {
 }
 
 /* Performance Optimizations */
-* {
+body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }

@@ -127,6 +127,10 @@ document.addEventListener('DOMContentLoaded', function() {
         bookingForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
+            // Clear any previous errors
+            const errorElements = bookingForm.querySelectorAll('.error-message');
+            errorElements.forEach(el => el.remove());
+
             // Get form data
             const formData = {
                 name: document.getElementById('name').value,
@@ -139,28 +143,34 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             // Validate form
+            let isValid = true;
+
             if (!formData.name || !formData.email || !formData.phone || !formData.tour || !formData.date || !formData.guests) {
-                alert('Please fill in all required fields.');
-                return;
+                showFormError(bookingForm, 'Please fill in all required fields.');
+                isValid = false;
             }
 
             // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(formData.email)) {
-                alert('Please enter a valid email address.');
-                return;
+            if (isValid && formData.email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(formData.email)) {
+                    showFormError(document.getElementById('email').parentElement, 'Please enter a valid email address.');
+                    isValid = false;
+                }
             }
 
             // Phone validation (basic)
-            const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-            if (!phoneRegex.test(formData.phone)) {
-                alert('Please enter a valid phone number.');
-                return;
+            if (isValid && formData.phone) {
+                const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+                if (!phoneRegex.test(formData.phone)) {
+                    showFormError(document.getElementById('phone').parentElement, 'Please enter a valid phone number.');
+                    isValid = false;
+                }
             }
 
-            // In a real application, this would send data to a server
-            // For this static website, we'll show success message and prepare mailto
-            console.log('Booking request:', formData);
+            if (!isValid) {
+                return;
+            }
 
             // Create mailto link with form data
             const subject = encodeURIComponent('Tour Booking Request - ' + formData.tour);
@@ -186,6 +196,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeModalFunction();
             }, 3000);
         });
+    }
+
+    function showFormError(element, message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.style.color = '#e74c3c';
+        errorDiv.style.fontSize = '0.875rem';
+        errorDiv.style.marginTop = '0.25rem';
+        errorDiv.textContent = message;
+        element.appendChild(errorDiv);
     }
 
     // Set minimum date for date picker to today
@@ -276,10 +296,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.addEventListener('scroll', highlightNavigation);
 
-    // Console message for developers
-    console.log('%c🏝️ Zanzibar Tours Website', 'color: #00a8cc; font-size: 20px; font-weight: bold;');
-    console.log('%cThis is a static website built with HTML, CSS, and vanilla JavaScript.', 'color: #666; font-size: 14px;');
-    console.log('%cNo backend required! Fast, secure, and SEO-friendly.', 'color: #666; font-size: 14px;');
+    // Performance monitoring (development only)
+    // Uncomment in development to monitor performance
+    // console.log('%c🏝️ Zanzibar Tours Website', 'color: #00a8cc; font-size: 20px; font-weight: bold;');
+    // console.log('%cThis is a static website built with HTML, CSS, and vanilla JavaScript.', 'color: #666; font-size: 14px;');
+    // console.log('%cNo backend required! Fast, secure, and SEO-friendly.', 'color: #666; font-size: 14px;');
 });
 
 // Service Worker Registration for PWA capabilities (optional enhancement)
@@ -296,9 +317,10 @@ if ('serviceWorker' in navigator) {
 
 // Performance monitoring
 window.addEventListener('load', function() {
-    if ('performance' in window) {
-        const perfData = window.performance.timing;
-        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-        console.log('Page load time:', pageLoadTime + 'ms');
-    }
+    // Development only - uncomment to monitor performance
+    // if ('performance' in window) {
+    //     const perfData = window.performance.timing;
+    //     const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+    //     console.log('Page load time:', pageLoadTime + 'ms');
+    // }
 });
